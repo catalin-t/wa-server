@@ -1,0 +1,29 @@
+services:
+  wa-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wa-server
+    restart: unless-stopped
+    ports:
+      - "8910:3000"
+    volumes:
+      - ./sessions:/app/sessions
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - API_TOKEN=${API_TOKEN}
+      - SESSION_FOLDER=/app/sessions
+      - LOG_LEVEL=info
+      - RATE_LIMIT_WINDOW_MS=1000
+      - RATE_LIMIT_MAX_REQUESTS=1
+      - MAX_RECONNECT_ATTEMPTS=${MAX_RECONNECT_ATTEMPTS:-2}
+      - BASE_RETRY_DELAY_MS=${BASE_RETRY_DELAY_MS:-60000}
+      - COOLDOWN_PERIOD_MS=${COOLDOWN_PERIOD_MS:-300000}
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
