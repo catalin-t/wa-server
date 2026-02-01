@@ -271,6 +271,11 @@ class WhatsAppService {
         }
       }
       logger.info('Session data cleared successfully');
+
+      // Auto-start new connection to generate QR code
+      logger.info('Starting fresh connection...');
+      await this.connect();
+
       return { success: true, deletedFiles: files.filter(f => f !== '.gitkeep') };
     } catch (error) {
       logger.error('Failed to clear session data:', error);
